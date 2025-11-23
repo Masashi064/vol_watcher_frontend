@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { MyChatBubble } from "@/components/MyChatBubble";
 
 type SymbolCode = 'VIX' | 'NIKKEI_VI';
 
