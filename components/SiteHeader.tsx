@@ -94,7 +94,7 @@ export function SiteHeader() {
                   onClick={handleLogin}
                   className="rounded-full border border-sky-500 px-3 py-1 text-sm font-medium text-sky-200 hover:bg-sky-500/10"
                 >
-                  ログイン
+                  Login
                 </button>
               )}
             </>
