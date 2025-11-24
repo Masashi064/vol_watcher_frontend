@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { SiteHeader } from '@/components/SiteHeader';
 
 type SymbolCode = 'VIX' | 'NIKKEI_VI';
 
@@ -138,6 +139,8 @@ export default function AlertsPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
+    {/* 共通ヘッダー */}
+    <SiteHeader />
       <main className="mx-auto max-w-4xl px-4 py-8">
         <h1 className="mb-4 text-2xl font-bold">ボラティリティ・アラート設定</h1>
 

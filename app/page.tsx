@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+
 import {
   LineChart,
   Line,
@@ -11,6 +12,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+
+import { SiteHeader } from '@/components/SiteHeader';
+
 
 type Symbol = 'VIX' | 'NIKKEI_VI';
 
@@ -173,9 +177,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
+    {/* 共通ヘッダー */}
+    <SiteHeader />
       <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8">
         <header className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
-          <h1 className="text-2xl font-bold">Volatility Dashboard</h1>
           <div className="flex gap-2">
             {TIME_RANGE_LABELS.map((tr) => (
               <button
