@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
 
 import {
   LineChart,
@@ -12,9 +13,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-
-import { SiteHeader } from '@/components/SiteHeader';
-
 
 type Symbol = 'VIX' | 'NIKKEI_VI';
 
@@ -176,30 +174,44 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-    {/* 共通ヘッダー */}
-    <SiteHeader />
-      <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8">
-        <header className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
-          <div className="flex gap-2">
-            {TIME_RANGE_LABELS.map((tr) => (
-              <button
-                key={tr.value}
-                onClick={() => setTimeRange(tr.value)}
-                className={`rounded-full px-3 py-1 text-sm ${
-                  timeRange === tr.value
-                    ? 'bg-emerald-500 text-slate-950'
-                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
-                }`}
-              >
-                {tr.label}
-              </button>
-            ))}
-          </div>
-        </header>
+    <>
+      <header className="flex flex-col-reverse gap-3 md:flex-row md:items-center md:justify-between mb-6">
+        {/* 左側：期間フィルタ */}
+        <div className="flex gap-2">
+          {TIME_RANGE_LABELS.map((tr) => (
+            <button
+              key={tr.value}
+              onClick={() => setTimeRange(tr.value)}
+              className={`rounded-full px-3 py-1 text-sm ${
+                timeRange === tr.value
+                  ? 'bg-emerald-500 text-slate-950'
+                  : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+              }`}
+            >
+              {tr.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 右側：アラート作成ボタン（大きく目立たせる） */}
+        <div className="flex justify-end">
+          <Link
+            href="/alerts"
+            className="
+              rounded-full bg-emerald-500
+              px-5 py-2 text-sm font-semibold 
+              text-slate-900 shadow-lg
+              hover:bg-emerald-400
+            "
+          >
+            アラートを作成
+          </Link>
+        </div>
+      </header>
+
 
         {/* 最新値カード */}
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid gap-4 md:grid-cols-2 mb-6">
           {(['VIX', 'NIKKEI_VI'] as Symbol[]).map((symbol) => {
             const latest = latestBySymbol.get(symbol);
             return (
@@ -291,7 +303,6 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
-      </main>
-    </div>
+      </>
   );
 }
