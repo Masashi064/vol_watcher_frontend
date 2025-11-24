@@ -13,11 +13,9 @@ export function SiteHeader() {
   // ログイン状態を監視
   useEffect(() => {
     // 初回：現在のユーザーを取得
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user ?? null);
+      setLoading(false);
     });
 
     // 状態変化（ログイン/ログアウト）を購読
@@ -36,10 +34,10 @@ export function SiteHeader() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Supabase の Redirect URL にこの URL を登録しておく
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+
 
     if (error) {
       console.error('Login error:', error.message);
