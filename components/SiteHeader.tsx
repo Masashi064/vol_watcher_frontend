@@ -13,9 +13,11 @@ export function SiteHeader() {
   // ログイン状態を監視
   useEffect(() => {
     // 初回：現在のユーザーを取得
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-      setLoading(false);
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
 
     // 状態変化（ログイン/ログアウト）を購読
