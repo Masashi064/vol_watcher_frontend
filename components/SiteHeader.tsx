@@ -71,14 +71,6 @@ export function SiteHeader() {
             HOME
           </Link>
 
-          {/* アラートを作成 ボタン（/alerts へ遷移） */}
-          <Link
-            href="/alerts"
-            className="rounded-full bg-emerald-500 px-3 py-1 text-sm font-medium text-slate-950 hover:bg-emerald-400"
-          >
-            アラートを作成
-          </Link>
-
           {/* ログイン / ログアウト */}
           {!loading && (
             <>
