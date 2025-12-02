@@ -24,7 +24,7 @@ export function SiteHeader() {
             title="ご意見・ご要望フォーム"
             className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
           >
-            開発者へ連絡する
+            開発者へ連絡
           </Link>
         </nav>
       </div>
