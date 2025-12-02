@@ -7,31 +7,25 @@ export function SiteHeader() {
   return (
     <header className="border-b border-slate-800 bg-slate-950/80">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        {/* 左側：サイトタイトル */}
+        {/* 左側：サイトタイトル（HOMEへのリンク） */}
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">Volatility Dashboard</h1>
-        </div>
-
-        {/* 右側：ナビボタン */}
-        <nav className="flex items-center gap-2">
-          {/* HOME ボタン */}
           <Link
             href="/"
-            className="rounded-full border border-slate-700 px-3 py-1 text-sm hover:bg-slate-800"
+            className="text-2xl font-bold text-slate-100 transition-colors hover:text-emerald-300"
           >
-            HOME
+            Volatility Dashboard
           </Link>
+        </div>
 
-          {/* 将来ログインを戻すときは、ここにボタンを復活させる */}
-          {/*
-          <button
-            type="button"
-            onClick={handleLogin}
-            className="rounded-full border border-sky-500 px-3 py-1 text-sm font-medium text-sky-200 hover:bg-sky-500/10"
+        {/* 右側：ご意見ボタン */}
+        <nav className="flex items-center gap-2">
+          <Link
+            href="/contact"
+            title="ご意見・ご要望フォーム"
+            className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
           >
-            Login
-          </button>
-          */}
+            開発者へ連絡する
+          </Link>
         </nav>
       </div>
     </header>

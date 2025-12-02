@@ -275,7 +275,7 @@ export default function AlertsPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <p className="mt-2 text-xs text-slate-500">
-            上記のアラートルールに従って、指定のメールアドレスに注意喚起のメールを送信します(いつでも解除できます)。
+            上記のアラートルールに従って、指定のメールアドレスに注意喚起のメールを送信します（チェックを外して登録することで解除もできます）。
           </p>
         </div>
 
