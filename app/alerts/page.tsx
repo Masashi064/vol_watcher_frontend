@@ -107,7 +107,7 @@ export default function AlertsPage() {
     try {
       // このメールアドレスの既存設定を削除
       const { error: deleteError } = await supabase
-        .from('alert_rules')
+        .from('vol_alert_rules')   // ← 修正
         .delete()
         .eq('email', trimmedEmail);
 
@@ -139,7 +139,7 @@ export default function AlertsPage() {
       );
 
       const { error: insertError } = await supabase
-        .from('alert_rules')
+        .from('vol_alert_rules')   // ← 修正
         .insert(payload);
 
       if (insertError) {
