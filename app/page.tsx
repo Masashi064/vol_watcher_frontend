@@ -32,15 +32,13 @@ const TIME_RANGE_LABELS: { value: TimeRange; label: string }[] = [
   { value: '10Y', label: '10年' },
 ];
 
-// 小数第2位で丸めて文字列にするヘルパー
 function formatVol(value?: number | null): string {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return '-';
   }
-  return value.toFixed(2); // 例: 23.4300003 → "23.43"
+  return value.toFixed(2);
 }
 
-// 「基準日 baseDate からどこまでさかのぼるか」を計算
 function calcFromDate(range: TimeRange, baseDate: Date): string {
   const d = new Date(baseDate);
   switch (range) {
@@ -60,7 +58,7 @@ function calcFromDate(range: TimeRange, baseDate: Date): string {
       d.setFullYear(d.getFullYear() - 10);
       break;
   }
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+  return d.toISOString().slice(0, 10);
 }
 
 export default function DashboardPage() {
@@ -69,7 +67,6 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [latestDate, setLatestDate] = useState<string | null>(null);
 
-  // ① マウント時に「全シンボルの中で一番新しい日付」を取得
   useEffect(() => {
     const fetchLatest = async () => {
       const { data, error } = await supabase
@@ -84,15 +81,12 @@ export default function DashboardPage() {
         return;
       }
       if (data && data.length > 0) {
-        console.log('fetchLatest MAX(date):', data[0].date); // ★追加
-        setLatestDate(data[0].date); // "YYYY-MM-DD"
+        setLatestDate(data[0].date);
       }
     };
     fetchLatest();
   }, []);
 
-
-  // 最新値（カード用）: 「今表示している範囲の中で」一番新しい値
   const latestBySymbol = useMemo(() => {
     const map = new Map<Symbol, VolatilityRow>();
     for (const row of data) {
@@ -104,7 +98,6 @@ export default function DashboardPage() {
     return map;
   }, [data]);
 
-  // グラフ用データ
   const chartData = useMemo(() => {
     const byDate = new Map<
       string,
@@ -122,10 +115,9 @@ export default function DashboardPage() {
     );
   }, [data]);
 
-  // ② latestDate がわかったら、その日付を基準に範囲を計算してデータ取得
   useEffect(() => {
     const fetchData = async () => {
-      if (!latestDate) return; // まだ最新日付が取れていない
+      if (!latestDate) return;
 
       setLoading(true);
       const base = new Date(latestDate);
@@ -138,7 +130,7 @@ export default function DashboardPage() {
         .lte('date', latestDate)
         .in('symbol', ['VIX', 'NIKKEI_VI'])
         .order('date', { ascending: true })
-        .limit(5000);          // ★ これを追加！
+        .limit(5000);
 
       if (error) {
         console.error('Error fetching data:', error);
@@ -150,20 +142,6 @@ export default function DashboardPage() {
             symbol: row.symbol as Symbol,
             close: Number(row.close),
           })) ?? [];
-
-        if (rows.length > 0) {
-          const minDate = rows[0].date;
-          const maxDate = rows[rows.length - 1].date;
-          console.log('fetchData', {
-            timeRange,
-            from,
-            latestDate,
-            count: rows.length,
-            minDate,
-            maxDate,
-          }); // ★追加
-        }
-
         setData(rows);
       }
       setLoading(false);
@@ -172,137 +150,139 @@ export default function DashboardPage() {
     fetchData();
   }, [timeRange, latestDate]);
 
-
   return (
     <>
-      <header className="flex flex-col-reverse gap-3 md:flex-row md:items-center md:justify-between mb-6">
-        {/* 左側：期間フィルタ */}
-        <div className="flex gap-2">
-          {TIME_RANGE_LABELS.map((tr) => (
-            <button
-              key={tr.value}
-              onClick={() => setTimeRange(tr.value)}
-              className={`rounded-full px-3 py-1 text-sm ${
-                timeRange === tr.value
-                  ? 'bg-emerald-500 text-slate-950'
-                  : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
-              }`}
-            >
-              {tr.label}
-            </button>
-          ))}
-        </div>
-
-        {/* 右側：アラート作成ボタン（大きく目立たせる） */}
-        <div className="flex justify-end">
-          <Link
-            href="/alerts"
-            className="
-              rounded-full bg-emerald-500
-              px-5 py-2 text-sm font-semibold 
-              text-slate-900 shadow-lg
-              hover:bg-emerald-400
-            "
-          >
-            アラートを作成
-          </Link>
-        </div>
+      {/* 上部ヘッダー：アラートボタン（キラキラ） */}
+      <header className="mb-6 flex justify-end">
+        <Link
+          href="/alerts"
+          className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-slate-900 shadow-lg hover:bg-emerald-400"
+        >
+          アラートを作成
+        </Link>
       </header>
 
-
-        {/* 最新値カード */}
-        <section className="grid gap-4 md:grid-cols-2 mb-6">
-          {(['VIX', 'NIKKEI_VI'] as Symbol[]).map((symbol) => {
-            const latest = latestBySymbol.get(symbol);
-            return (
-              <div
-                key={symbol}
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm text-slate-400">
-                      {symbol === 'VIX'
-                        ? 'VIX（米国恐怖指数）'
-                        : '日経平均ボラティリティ・インデックス'}
-                    </div>
-                    <div className="mt-1 text-3xl font-semibold">
-                      {formatVol(latest?.close)}
-                    </div>
+      {/* 最新値カード */}
+      <section className="mb-6 grid gap-4 md:grid-cols-2">
+        {(['VIX', 'NIKKEI_VI'] as Symbol[]).map((symbol) => {
+          const latest = latestBySymbol.get(symbol);
+          return (
+            <div
+              key={symbol}
+              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-slate-400">
+                    {symbol === 'VIX'
+                      ? 'VIX（米国恐怖指数）'
+                      : '日経平均ボラティリティ・インデックス'}
                   </div>
-                  <div className="text-right text-xs text-slate-500">
-                    {latest
-                      ? `最終更新: ${latest.date}`
-                      : latestDate
-                      ? `最終更新: ${latestDate}`
-                      : 'データなし'}
+                  <div className="mt-1 text-3xl font-semibold">
+                    {formatVol(latest?.close)}
                   </div>
                 </div>
+                <div className="text-right text-xs text-slate-500">
+                  {latest
+                    ? `最終更新: ${latest.date}`
+                    : latestDate
+                    ? `最終更新: ${latestDate}`
+                    : 'データなし'}
+                </div>
               </div>
-            );
-          })}
-        </section>
+            </div>
+          );
+        })}
+      </section>
 
-        {/* グラフ */}
-        <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow">
-          <h2 className="mb-4 text-lg font-semibold">推移グラフ</h2>
-          {!latestDate ? (
-            <div className="py-12 text-center text-slate-400">
-              最新日付を取得中...
+      {/* グラフ＋期間タブ */}
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow">
+        <h2 className="mb-4 text-lg font-semibold">推移グラフ</h2>
+
+        {!latestDate ? (
+          <div className="py-12 text-center text-slate-400">
+            最新日付を取得中...
+          </div>
+        ) : loading ? (
+          <div className="py-12 text-center text-slate-400">読み込み中...</div>
+        ) : chartData.length === 0 ? (
+          <div className="py-12 text-center text-slate-400">
+            データがありません。
+          </div>
+        ) : (
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10 }}
+                  minTickGap={16}
+                />
+                <YAxis
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(value: number) => value.toFixed(1)}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#020617',
+                    border: '1px solid #1f2937',
+                    borderRadius: 8,
+                  }}
+                  labelStyle={{ color: '#e5e7eb' }}
+                  formatter={(value: any, name: string) => {
+                    const n = Number(value);
+                    return [formatVol(n), name];
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="NIKKEI_VI"
+                  stroke="#38bdf8"
+                  dot={false}
+                  connectNulls
+                />
+                <Line
+                  type="monotone"
+                  dataKey="VIX"
+                  stroke="#22c55e"
+                  dot={false}
+                  connectNulls
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* 期間ボタン：中央・少し大きめ・目立つタブ風 */}
+        <div className="mt-6 border-t border-slate-800 pt-4">
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2 py-1 shadow-inner">
+              {TIME_RANGE_LABELS.map((tr) => {
+                const active = timeRange === tr.value;
+                return (
+                  <button
+                    key={tr.value}
+                    type="button"
+                    onClick={() => setTimeRange(tr.value)}
+                    className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition
+                      ${
+                        active
+                          ? 'bg-sky-500/20 text-sky-300 shadow-[0_0_12px_rgba(56,189,248,0.7)]'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-slate-50'
+                      }`}
+                  >
+                    {tr.label}
+                    {active && (
+                      <span className="pointer-events-none absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-sky-400" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
-          ) : loading ? (
-            <div className="py-12 text-center text-slate-400">読み込み中...</div>
-          ) : chartData.length === 0 ? (
-            <div className="py-12 text-center text-slate-400">
-              データがありません。
-            </div>
-          ) : (
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 10 }}
-                    minTickGap={16}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10 }}
-                    tickFormatter={(value: number) => value.toFixed(1)}
-                  />
-                  <Tooltip
-                    // ツールチップ全体の見た目（任意）
-                    contentStyle={{
-                      backgroundColor: '#020617',
-                      border: '1px solid #1f2937',
-                      borderRadius: 8,
-                    }}
-                    labelStyle={{ color: '#e5e7eb' }}
-                    // 値のフォーマット部分がポイント
-                    formatter={(value: any, name: string) => {
-                      const n = Number(value);
-                      return [formatVol(n), name]; // [表示する値, ラベル名]
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="NIKKEI_VI"
-                    stroke="#38bdf8"
-                    dot={false}
-                    connectNulls
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="VIX"
-                    stroke="#22c55e"
-                    dot={false}
-                    connectNulls
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </section>
-      </>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
