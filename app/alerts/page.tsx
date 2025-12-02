@@ -180,9 +180,6 @@ export default function AlertsPage() {
           恐怖指数（VIX / 日経VI）がある段階を超えたとき、指定したメールアドレスに
           アラートメールを送信するサービスです（無料）。
         </p>
-        <p className="mb-6 mt-1 text-xs text-slate-500">
-          登録はいつでも解除できます。
-        </p>
 
         {/* ルール一覧 */}
         <div className="mb-6 space-y-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
@@ -278,9 +275,7 @@ export default function AlertsPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <p className="mt-2 text-xs text-slate-500">
-            上記のアラートルールに従って、指定のメールアドレスに注意喚起のメールを送信します。
-            アラートが不要になった場合は、同じメールアドレスを入力し、
-            すべてのチェックを外して保存することで、いつでも解除できます。
+            上記のアラートルールに従って、指定のメールアドレスに注意喚起のメールを送信します(いつでも解除できます)。
           </p>
         </div>
 
